@@ -1,5 +1,8 @@
 package com.rikotsev.fin.grform.bus.tickers;
 
+import com.rikotsev.fin.grform.bus.bean.Company;
+import com.rikotsev.fin.grform.bus.dao.BeanDAO;
+import com.rikotsev.fin.grform.bus.dao.DatabaseFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -38,12 +41,15 @@ final class TickerManagerImpl implements TickerManager {
         final String filePath = RESOURCE_FILE_NAME;
         final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         final List<Future<Void>> futures = new ArrayList<>();
+        final CSVFile file = new CSVFile(filePath);
 
         while(!startingPositionsPool.empty()) {
+
+            final BeanDAO<Company> dao = DatabaseFacade.getInstance().dao(Company.class, null);
+
             final Future<Void> future = (Future<Void>) executor.submit(() -> {
 
                 int startingPosition = startingPositionsPool.pop();
-                final CSVFile file = new CSVFile(filePath);
 
                 try {
 
@@ -80,7 +86,7 @@ final class TickerManagerImpl implements TickerManager {
                 }
 
             }
-        }.run();
+        }.start();
 
     }
 
