@@ -1,16 +1,18 @@
 package com.rikotsev.fin.grform.bus.tickers;
 
-import com.rikotsev.fin.grform.bus.bean.Company;
+import com.rikotsev.fin.grform.bus.bean.StockExchange;
 import com.rikotsev.fin.grform.bus.dao.BeanDAO;
 import com.rikotsev.fin.grform.bus.dao.DatabaseFacade;
+import com.rikotsev.fin.grform.bus.io.CSVFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -34,6 +36,9 @@ final class TickerManagerImpl implements TickerManager {
 
     private Logger logger = LoggerFactory.getLogger(TickerManagerImpl.class);
 
+    @Autowired
+    DataSource dataSource;
+
     @Override
     public void manage() throws Exception {
 
@@ -41,30 +46,21 @@ final class TickerManagerImpl implements TickerManager {
         final String filePath = RESOURCE_FILE_NAME;
         final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         final List<Future<Void>> futures = new ArrayList<>();
-        final CSVFile file = new CSVFile(filePath);
+        final StockExchange defaultStockExchange = getDefaultStockExchange();
+
 
         while(!startingPositionsPool.empty()) {
 
-            final BeanDAO<Company> dao = DatabaseFacade.getInstance().dao(Company.class, null);
+            int startingPosition = startingPositionsPool.pop();
 
-            final Future<Void> future = (Future<Void>) executor.submit(() -> {
+            final TickerWorker worker = new TickerWorker(
+                    dataSource.getConnection(),
+                    startingPosition,
+                    new CSVFile(filePath),
+                    defaultStockExchange
+            );
 
-                int startingPosition = startingPositionsPool.pop();
-
-                try {
-
-                    final Set<String> lines = file.lines(startingPosition, SECTION_SIZE);
-
-                    logger.info("Thread to work on {} lines, starting from {}", lines.size(), startingPosition);
-
-
-                } catch (IOException e) {
-                    logger.error("Thread failed to collect lines from file!");
-                    logger.error(e.getMessage());
-                }
-
-                return ;
-            });
+            final Future<Void> future = executor.submit(worker);
 
             futures.add(future);
         }
@@ -102,6 +98,33 @@ final class TickerManagerImpl implements TickerManager {
 
         return file.startingLinesPool(SECTION_SIZE);
 
+    }
+
+    /**
+     * Implementation as of 11.04.2020 - will be removed later
+     * @return the default stock exchange
+     */
+    private StockExchange getDefaultStockExchange() throws Exception {
+
+        try(final BeanDAO<StockExchange> dao = DatabaseFacade.getInstance().dao(StockExchange.class, dataSource.getConnection());) {
+
+            final StockExchange stockExchangeFilter = new StockExchange();
+            stockExchangeFilter.setCode("NYSE");
+
+            final Optional<StockExchange> result = dao.select(stockExchangeFilter);
+
+            if(result.isPresent()) {
+                return result.get();
+            }
+            else {
+                throw new UnsupportedOperationException("There is no default instance of stock exchange!");
+            }
+        }
+        catch(final SQLException e) {
+            logger.error("Failed to get default Stock Exchange ", e);
+
+            throw new RuntimeException(e);
+        }
     }
 
 }

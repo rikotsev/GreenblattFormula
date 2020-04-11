@@ -31,9 +31,11 @@ class StockExchangeDAO implements BeanDAO<StockExchange> {
 
         try (final PreparedStatement stmt = connection.prepareStatement(sqlQuery)) {
 
+            stmt.setString(1, bean.getCode());
+
             final ResultSet rs = stmt.executeQuery();
 
-            if(rs.first()) {
+            if(rs.next()) {
 
                 final StockExchange stockExchange = new StockExchange();
                 stockExchange.setId(rs.getInt(1));

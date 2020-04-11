@@ -69,7 +69,7 @@ class CompanyDAO implements BeanDAO<Company>, AutoCloseable {
             stmt.setString(1, ticker);
 
             final ResultSet rs = stmt.executeQuery();
-            if (rs.first()) {
+            if (rs.next()) {
 
                 final Company company = new Company();
                 company.setId(rs.getLong(1));

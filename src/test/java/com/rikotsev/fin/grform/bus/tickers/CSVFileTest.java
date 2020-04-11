@@ -1,5 +1,6 @@
 package com.rikotsev.fin.grform.bus.tickers;
 
+import com.rikotsev.fin.grform.bus.io.CSVFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -7,9 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 

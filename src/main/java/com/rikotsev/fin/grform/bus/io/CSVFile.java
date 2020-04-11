@@ -1,4 +1,4 @@
-package com.rikotsev.fin.grform.bus.tickers;
+package com.rikotsev.fin.grform.bus.io;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  *
  * @Author rikotsev
  */
-class CSVFile {
+public class CSVFile {
 
     private final Path filePath;
 

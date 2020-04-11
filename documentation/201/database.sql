@@ -18,3 +18,5 @@ CREATE TABLE COMPANY (
 
 
 CREATE INDEX idx_company_ticker ON company(ticker);
+
+INSERT INTO stock_exchange (name, code) VALUES ('New York Stock Exchange','NYSE');

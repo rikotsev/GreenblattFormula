@@ -4,7 +4,6 @@ import com.rikotsev.fin.grform.bus.bean.Bean;
 import com.rikotsev.fin.grform.bus.bean.Company;
 import com.rikotsev.fin.grform.bus.bean.StockExchange;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 
 public class DatabaseFacade {
@@ -25,7 +24,7 @@ public class DatabaseFacade {
 
     private DatabaseFacade() {}
 
-    public <T extends BeanDAO, K> T dao(final Class<K> beanClass, final Connection connection) {
+    public <T extends BeanDAO, K extends Bean> T dao(final Class<K> beanClass, final Connection connection) {
         if(beanClass.equals(Company.class)) {
             return (T) new CompanyDAO(connection);
         }
@@ -34,6 +33,15 @@ public class DatabaseFacade {
         }
         else {
             throw new UnsupportedOperationException("No implementation of dao for " + beanClass.toString());
+        }
+    }
+
+    public <T extends BeanBatchDAO, K extends Bean> T batchDao(final Class<K> beanClass,final Connection connection) {
+        if(beanClass.equals(Company.class)) {
+            return (T) new CompanyBatchDAO(connection);
+        }
+        else {
+            throw new UnsupportedOperationException("No implementation of batch dao for " + beanClass.toString());
         }
     }
 
