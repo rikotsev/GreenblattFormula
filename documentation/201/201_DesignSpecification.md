@@ -22,7 +22,7 @@ User enters the `/calculateFormula` url. Based on the tickers already existing i
 1. For each company calculate the __Return on Capital__
     * > Return on Capital = EBIT / Net Fixed Assets + Net Working Capital <br>
       ,where EBIT (Income Statement) and <br>
-       Net Fixed Assets = Total Assets - (Total Liabilities + Depreciation) (All from Balance Sheet) and <br>
+       Net Fixed Assets = Long Term Assets - (Long Term Liabilities + Depreciation) (All from Balance Sheet) and <br>
        Net Working Capital = Accounts Receivable + Inventory - Accounts Payable (All from Balance Sheet)
 1. Based on __Earnings Yield__ sort the companies in ascending order
 1. Based on __Return on Capital__ sort the companies in ascending order

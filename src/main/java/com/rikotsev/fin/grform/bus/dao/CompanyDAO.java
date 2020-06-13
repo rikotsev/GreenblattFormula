@@ -34,8 +34,8 @@ class CompanyDAO implements BeanDAO<Company>, AutoCloseable {
         if(bean.getId() != 0) {
             return select(bean.getId());
         }
-        else if(bean.getTicker() != null) {
-            return select(bean.getTicker());
+        else if(bean.getTicker() != null && bean.getStockExchange()!= null && bean.getStockExchange().getId() != 0) {
+            return select(bean.getTicker(), bean.getStockExchange().getId());
         }
         else {
             throw new IllegalArgumentException("You have to pass either id or ticker to select a single company!");
@@ -61,12 +61,13 @@ class CompanyDAO implements BeanDAO<Company>, AutoCloseable {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    private Optional<Company> select(final String ticker) {
-        final String sqlQuery = "SELECT company_id, ticker, description, stock_exchange_id FROM company WHERE ticker = ?";
+    private Optional<Company> select(final String ticker, final int stockExchangeId) {
+        final String sqlQuery = "SELECT company_id, ticker, description, stock_exchange_id FROM company WHERE ticker = ? AND stock_exchange_id = ?";
 
         try(final PreparedStatement stmt = connection.prepareStatement(sqlQuery);) {
 
             stmt.setString(1, ticker);
+            stmt.setInt(2, stockExchangeId);
 
             final ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

@@ -13,7 +13,7 @@ CREATE TABLE COMPANY (
     STOCK_EXCHANGE_ID INT,
     PRIMARY KEY (COMPANY_ID),
     FOREIGN KEY (STOCK_EXCHANGE_ID) REFERENCES STOCK_EXCHANGE(STOCK_EXCHANGE_ID),
-    UNIQUE(TICKER)
+    CONSTRAINT company_ticker_unq UNIQUE (ticker, stock_exchange_id) --Tickers are unique for stock exchange :)
 );
 
 

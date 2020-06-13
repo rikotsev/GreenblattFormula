@@ -1,6 +1,5 @@
-package com.rikotsev.fin.grform.bus.tickers;
+package com.rikotsev.fin.grform.bus.io;
 
-import com.rikotsev.fin.grform.bus.io.CSVFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

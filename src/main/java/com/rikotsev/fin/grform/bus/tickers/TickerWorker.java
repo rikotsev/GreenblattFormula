@@ -65,6 +65,7 @@ class TickerWorker implements Callable<Void> {
                 final String[] values = line.split("\t");
                 company.setTicker(values[0]);
                 company.setDescription(values[1]);
+                company.setStockExchange(stockExchange);
                 //TODO add Stock Exchange Information
 
                 final Optional<Company> dbRecord = companyDao.select(company);
@@ -75,7 +76,6 @@ class TickerWorker implements Callable<Void> {
                     updates.add(dbRecord.get());
                 }
                 else if(!dbRecord.isPresent()) {
-                    company.setStockExchange(stockExchange);
                     inserts.add(company);
                 }
                 
